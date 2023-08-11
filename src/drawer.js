@@ -2,19 +2,21 @@ import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import AddInsertNewVideoDialog from './InsertNewVideoDialog';
+import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
+import AddIcon from '@mui/icons-material/Add';
+import StoreIcon from '@mui/icons-material/Store';
+import { Card, Grid } from '@mui/material';
 import VideoPlayerMain from './VideoPlayer';
 
 const drawerWidth = 240;
@@ -26,35 +28,98 @@ interface Props {
 export default function ResponsiveDrawer(props: Props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [showAddCameraBox, setShowAddCameraBox] = React.useState(false);
+  const [items, setItems] = React.useState('default');
+
+  const urls = ["https://livesim.dashif.org/livesim/chunkdur_1/ato_7/testpic4_8s/Manifest.mpd"
+                ,"https://livesim.dashif.org/livesim/chunkdur_1/ato_7/testpic4_8s/Manifest.mpd"
+                ,"https://livesim.dashif.org/livesim/chunkdur_1/ato_7/testpic4_8s/Manifest.mpd"];
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const handleAddCameraClick = () => {
+    setShowAddCameraBox(true);
+  };
+
+  const handleGetNewUrl = (newUrl) => {
+    urls.push(newUrl);
+    setItems('newUrl');
+  };
+
+  // const createItems = React.useMemo(() => new Array(1).fill(null).map((_, index) => {
+  //   const id = String(index + 1);
+  //   return {
+  //     label: `Some label`,
+  //     children: (
+  //       <div>
+  //         Child {id}, value: {value}
+  //       </div>
+  //     ),
+  //     key: id,
+  //   };
+  // }), [items]);
+  
+  // React.useMemo(()=>{
+  //   return urls.map((url, index) => {
+  //     <Grid item xs={12} sm={12} md={6}>
+  //         <Card minHeight={800}> 
+  //             <VideoPlayerMain url={url} videoId={index}/>
+  //         </Card>
+  //     </Grid>
+  //   })
+  //   ,[items]});
+
   const drawer = (
-    <div>
+    <Box>
       <Box
         component="img"
         sx={{
           width: '100%'
         }}
-        alt="The house from the offer."
+        alt="React JS Image"
         src="https://maktabkhooneh.org/mag/wp-content/uploads/2019/07/react-js-image.png"
       />
+
       <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        <ListItem 
+          key='Add Camera' 
+          disablePadding
+          onClick={handleAddCameraClick}
+        >
+          <ListItemButton>
+            <ListItemIcon>
+              <AddIcon />
+            </ListItemIcon>
+            <ListItemText primary='Add Camera' />
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem 
+          key='Contact us' 
+          disablePadding >
+          <ListItemButton>
+            <ListItemIcon>
+              <PhoneInTalkIcon />
+            </ListItemIcon>
+            <ListItemText primary='Contact us' />
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem 
+          key='Abaut us' 
+          disablePadding >
+          <ListItemButton>
+            <ListItemIcon>
+              <StoreIcon /> 
+            </ListItemIcon>
+            <ListItemText primary='Abaut us' />
+          </ListItemButton>
+        </ListItem>
+
       </List>
-      
-    </div>
+    </Box>
   );
 
   const container = window !== undefined ? () => window().document.body : undefined;
@@ -80,7 +145,7 @@ export default function ResponsiveDrawer(props: Props) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            React Camera's project
+            React Camera's Project
           </Typography>
         </Toolbar>
       </AppBar>
@@ -89,14 +154,14 @@ export default function ResponsiveDrawer(props: Props) {
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
         aria-label="mailbox folders"
       >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+        
         <Drawer
           container={container}
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true, 
           }}
           sx={{
             display: { xs: 'block', sm: 'none' },
@@ -124,8 +189,25 @@ export default function ResponsiveDrawer(props: Props) {
         <Typography paragraph>
           Camera's list 
         </Typography>
-        <VideoPlayerMain/>
+
+        <Box>
+            <Grid container rowSpacing={3} columnSpacing={3}>
+                {urls.map((url, index) => (
+                    <Grid item xs={12} sm={12} md={6}>
+                        <Card minHeight={800}> 
+                            <VideoPlayerMain url={url} videoId={index}/>
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>
+            {/* {createItems} */}
+        </Box>
+
       </Box>
+      <AddInsertNewVideoDialog 
+        showAddCameraBox={showAddCameraBox} 
+        setShowAddCameraBox={setShowAddCameraBox}
+        handleCallback = {handleGetNewUrl}/>
     </Box>
   );
 }
