@@ -24,21 +24,27 @@ export default function AddInsertNewVideoDialog(props) {
 
   const handleCheckAddress = async() => {
      if(error || address.length<20) {
-        alert("Please insert a valid address");
+        props.handleCallback('');
+        props.setShowAddCameraBox(true);
      }else{
-         await axios
-            .get(address)
-            .then((response) => {
-                console.log(response);
-                alert("The video will be added to camera list");
-                props.handleCallback(address);
-                props.setShowAddCameraBox(false);
-                setAdderss('');
-                setError(true);
-            })
-            .catch((err) => {
-                alert("Video on this Address is not found");
-            });
+        if (address.endsWith(".mpd") && address.startsWith("http")) {
+          await axios
+              .get(address)
+              .then((response) => {
+                  console.log(response);
+                  props.handleCallback(address);
+                  props.setShowAddCameraBox(false);
+                  setAdderss('');
+                  setError(true);
+              })
+              .catch((err) => {
+                props.handleCallback('');
+                props.setShowAddCameraBox(true);
+              });
+        } else {
+          props.handleCallback('');
+          props.setShowAddCameraBox(true);
+        }
      }
   };
 

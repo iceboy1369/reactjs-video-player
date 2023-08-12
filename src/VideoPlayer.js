@@ -6,6 +6,7 @@ import videojsqualityselector from 'videojs-hls-quality-selector';
 import 'video.js/dist/video-js.css';
 import hlsQualitySelector from "videojs-hls-quality-selector";
 import { Card } from "@mui/material";
+import AddOpenVideoDialog from "./OpenVideoDialog";
 
 
 const VideoPlayerMain = (props) => {
@@ -13,9 +14,10 @@ const VideoPlayerMain = (props) => {
   const videoRef = useRef();
   const [player, setPlayer] = useState(undefined);
   const [callFinishVideoAPI, setCallFinishVideoAPI] = useState(false);
+  const [showVideoBox, setShowVideoBox] = useState(false);
   const [vidDuration, setVidDuration] = useState(50000);
-  const videoId = props.videoId; //"e2280eeb-4cdb-43e7-a34f-36868326b8cb"
-  const thumbnailURL = "https://vz-a2adf92d-b24.b-cdn.net/e2280eeb-4cdb-43e7-a34f-36868326b8cb/thumbnail.jpg";
+  const videoId = props.videoId;
+  const thumbnailURL = "";
   const liveURL = props.url;
 
 
@@ -35,7 +37,7 @@ const VideoPlayerMain = (props) => {
 
   useEffect(() => {
     const videoJsOptions = {
-      autoplay: false,
+      autoplay: true,
       muted:"muted",
       controls: true,
       poster: "",
@@ -68,24 +70,26 @@ const VideoPlayerMain = (props) => {
     qualityLevels.trigger({ type: 'change', selectedIndex: 0 });
   
 
-    // p.ready(function() {
-    //   p.tech_.off('dblclick');
-    //   p.tech_.off('click');
-    // });
+    p.ready(function() {
+      p.tech_.off('dblclick');
+      p.tech_.off('click');
+    });
 
 
-    // p.on('click', function(evt) { 
-    //   if (evt.target.tagName === 'VIDEO') {
-    //     p.pause()
-    //   }
-    // });
+    p.on('click', function(evt) { 
+      if (evt.target.tagName === 'VIDEO') {
+        p.pause();
+        setShowVideoBox(true);
+      }
+    });
 
 
-    // p.on('touchstart', function(evt) { 
-    //   if (evt.target.tagName === 'VIDEO') {
-    //     p.pause()
-    //   }
-    // });
+    p.on('touchstart', function(evt) { 
+      if (evt.target.tagName === 'VIDEO') {
+        p.pause();
+        setShowVideoBox(true);
+      }
+    });
 
     setPlayer(p);
     //7.15.4
@@ -100,6 +104,11 @@ const VideoPlayerMain = (props) => {
       player.hlsQualitySelector({ displayCurrentQuality: true });
     }
   }, [player]);
+
+  const handleModalCallback = () => {
+    setShowVideoBox(false);
+    //player.play();
+  };
 
   return (
     <Card>
@@ -116,6 +125,13 @@ const VideoPlayerMain = (props) => {
         className="vidPlayer video-js vjs-default-skin vjs-big-play-centered"
         data-setup='{"fluid": true}'
       />
+
+      <AddOpenVideoDialog 
+        showVideoBox={showVideoBox} 
+        setShowVideoBox={setShowVideoBox} 
+        url={props.url}
+        handleCallback = {handleModalCallback}/>
+
     </Card>
   );
 }

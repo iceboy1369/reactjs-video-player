@@ -18,6 +18,7 @@ import AddIcon from '@mui/icons-material/Add';
 import StoreIcon from '@mui/icons-material/Store';
 import { Card, Grid } from '@mui/material';
 import VideoPlayerMain from './VideoPlayer';
+import InstantMessage from './ActionAlerts';
 
 const drawerWidth = 240;
 
@@ -29,11 +30,20 @@ export default function ResponsiveDrawer(props: Props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [showAddCameraBox, setShowAddCameraBox] = React.useState(false);
-  const [items, setItems] = React.useState('default');
+  const [showAlert, setShowAlert] = React.useState(false);
+  const [alertMessage, setAlertMessage] = React.useState('');
+  const [alertType, setAlertType] = React.useState(false);
+  const [urls, setUrls] = React.useState([]);
 
-  const urls = ["https://livesim.dashif.org/livesim/chunkdur_1/ato_7/testpic4_8s/Manifest.mpd"
-                ,"https://livesim.dashif.org/livesim/chunkdur_1/ato_7/testpic4_8s/Manifest.mpd"
-                ,"https://livesim.dashif.org/livesim/chunkdur_1/ato_7/testpic4_8s/Manifest.mpd"];
+
+  const defaultUrls = ["https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd"
+                      ,"https://dash.akamaized.net/dash264/TestCases/2c/qualcomm/1/MultiResMPEG2.mpd"
+                      ,"https://livesim.dashif.org/livesim/chunkdur_1/ato_7/testpic4_8s/Manifest.mpd"
+                      ,"http://dash.edgesuite.net/envivio/EnvivioDash3/manifest.mpd"];
+
+  React.useEffect(() => {
+    setUrls(defaultUrls);
+   },[]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -44,32 +54,16 @@ export default function ResponsiveDrawer(props: Props) {
   };
 
   const handleGetNewUrl = (newUrl) => {
-    urls.push(newUrl);
-    setItems('newUrl');
+    if (newUrl.length>0) {
+      setUrls([ ...urls, newUrl]);
+      setAlertMessage('The Video camera has added to camera list');
+      setAlertType(true);
+    } else {
+      setAlertMessage('Video on this Address is not found');
+      setAlertType(false);
+    }
+    setShowAlert(true);
   };
-
-  // const createItems = React.useMemo(() => new Array(1).fill(null).map((_, index) => {
-  //   const id = String(index + 1);
-  //   return {
-  //     label: `Some label`,
-  //     children: (
-  //       <div>
-  //         Child {id}, value: {value}
-  //       </div>
-  //     ),
-  //     key: id,
-  //   };
-  // }), [items]);
-  
-  // React.useMemo(()=>{
-  //   return urls.map((url, index) => {
-  //     <Grid item xs={12} sm={12} md={6}>
-  //         <Card minHeight={800}> 
-  //             <VideoPlayerMain url={url} videoId={index}/>
-  //         </Card>
-  //     </Grid>
-  //   })
-  //   ,[items]});
 
   const drawer = (
     <Box>
@@ -200,14 +194,23 @@ export default function ResponsiveDrawer(props: Props) {
                     </Grid>
                 ))}
             </Grid>
-            {/* {createItems} */}
+            
         </Box>
 
       </Box>
+
       <AddInsertNewVideoDialog 
         showAddCameraBox={showAddCameraBox} 
         setShowAddCameraBox={setShowAddCameraBox}
         handleCallback = {handleGetNewUrl}/>
+
+      {showAlert ? <InstantMessage 
+                      message = {alertMessage} 
+                      setShowAlert={setShowAlert} 
+                      success= {alertType}/> 
+                  : '' 
+      }
+
     </Box>
   );
 }
